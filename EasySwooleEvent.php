@@ -24,7 +24,7 @@ use App\Lib\Cache\Video as videoCache;
 use EasySwoole\Component\Timer;
 use EasySwoole\EasySwoole\ServerManager;
 use App\Lib\Process\ConsumerTest;
-
+use EasySwoole\FastCache\Cache;
 use App\Lib\Pool\MysqlPool;
 use EasySwoole\Component\Pool\PoolManager;
 
@@ -33,15 +33,16 @@ class EasySwooleEvent implements Event
     public static $profiling = 0;
     public static function initialize()
     {
-        self::$profiling = 1;
+        self::$profiling = 0;
         if  (self::$profiling) {
             xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
         }
-        // TODO: Implement initialize() method.
         date_default_timezone_set('Asia/Shanghai');
         $mysqlConfg = \Yaconf::get("mysql");
         // 注册mysql数据库连接池
         PoolManager::getInstance()->register(MysqlPool::class, $mysqlConfg['POOL_MAX_NUM']);
+
+
     }
 
     public static function mainServerCreate(EventRegister $register)
@@ -61,7 +62,7 @@ class EasySwooleEvent implements Event
         );
         Di::getInstance()->set('REDIS', Redis::getInstance());
         Di::getInstance()->set("ES", \App\Model\Es\EsClient::getInstance());
-
+        Cache::getInstance()->setTempDir(EASYSWOOLE_TEMP_DIR)->attachToServer(ServerManager::getInstance()->getSwooleServer());
         $allNum = 3;
         for ($i = 0 ;$i < $allNum; $i++){
             //ProcessManager::getInstance()->addProcess("imooc_consumer_testp_{$i}", ConsumerTest::class);

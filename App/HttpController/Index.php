@@ -5,6 +5,7 @@ namespace App\HttpController;
 use EasySwoole\Http\AbstractInterface\Controller;
 use App\Lib\AliyunSdk\AliVod;
 use Elasticsearch\ClientBuilder;
+use EasySwoole\FastCache\Cache;
 /**
  * Class Index. 
  * @package App\HttpController
@@ -16,10 +17,9 @@ class Index extends Controller
      * @author : evalor <master@evalor.cn>
      */
     function index()
-    {   
-        $cache = \EasySwoole\FastCache\Cache::getInstance();
-        $cache->set('name','仙士可');
-        return $this->writeJson(200, "OK",  $cache->keys());
+    {
+        Cache::getInstance()->set('name','仙士可',10000);
+        return $this->writeJson(200, "OK",  Cache::getInstance()->keys());
         // 测试 php-elasticsearch demo
         $params = [
             "index" => "imooc_video",

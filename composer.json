@@ -8,6 +8,7 @@
         "easyswoole/easyswoole": "3.x",
         "elasticsearch/elasticsearch": "~6.0",
         "joshcam/mysqli-database-class": "dev-master",
-		"easyswoole/mysqli": "^1.1"
+		"easyswoole/mysqli": "^1.1",
+		"easyswoole/fast-cache": "^1.2"
     }
 }
