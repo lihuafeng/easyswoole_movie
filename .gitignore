@@ -1,3 +1,5 @@
 vendor/
+easy-movie/
 composer.lock
 Temp/
+Log/

@@ -30,9 +30,13 @@ use EasySwoole\Component\Pool\PoolManager;
 
 class EasySwooleEvent implements Event
 {
-
+    public static $profiling = 0;
     public static function initialize()
     {
+        self::$profiling = 1;
+        if  (self::$profiling) {
+            xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+        }
         // TODO: Implement initialize() method.
         date_default_timezone_set('Asia/Shanghai');
         $mysqlConfg = \Yaconf::get("mysql");
@@ -46,11 +50,12 @@ class EasySwooleEvent implements Event
         // Mysql 相关  
         // mysql 配置 小伙伴 放到 ini文件
         // 之前es2 - mysql 需要小伙伴 用老师讲解的协程链接池 去优化
+        $mysqlConfg = \Yaconf::get("mysql");
         Di::getInstance()->set('MYSQL',\MysqliDb::class,Array (
             'host' => '127.0.0.1',
-            'username' => 'root',   
-            'password' => '123456',
-            'db'=> 'imooc_video',
+            'username' => 'miao',
+            'password' => 'zZZA6mz75m8dRaS4',
+            'db'=> 'miao',
             'port' => 3306,
             'charset' => 'utf8')    
         );
@@ -78,9 +83,16 @@ class EasySwooleEvent implements Event
                     $cacheVideoObj->setIndexVideo();
                 });
                 // todo
-
             }
         });
+        if(self::$profiling){
+            $data = xhprof_disable();
+            include_once getcwd(). "/xhprof_lib.php";
+            include_once getcwd() . "/xhprof_runs.php";
+            $x = new \XHProfRuns_Default();
+            $xhprofFilename = date('Ymd_His');
+            $x->save_run($data, $xhprofFilename);
+        }
     }
 
     public static function onRequest(Request $request, Response $response): bool
